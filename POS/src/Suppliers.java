@@ -1,3 +1,9 @@
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import net.proteanit.sql.DbUtils;
+
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -12,8 +18,14 @@ public class Suppliers extends javax.swing.JFrame {
     /**
      * Creates new form Suppliers
      */
+    
+    Connection Con = null;
+    PreparedStatement Pst = null;
+    ResultSet Rs = null;
+    Statement St = null;
     public Suppliers() {
         initComponents();
+        ShowSupplier();
     }
 
     /**
@@ -35,18 +47,18 @@ public class Suppliers extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        SupNameTb = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        SupPhoneTb = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
+        SuppliersTable = new javax.swing.JTable();
+        EditBtn = new javax.swing.JButton();
+        SaveBtn = new javax.swing.JButton();
+        DeleteBtn = new javax.swing.JButton();
+        SupRemarkTb = new javax.swing.JTextField();
+        SupAddressTb = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -124,16 +136,21 @@ public class Suppliers extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Supplier Name");
 
+        SupNameTb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Address");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Phone");
 
+        SupPhoneTb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setText("Remarks");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        SuppliersTable.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        SuppliersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -144,34 +161,45 @@ public class Suppliers extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        SuppliersTable.setRowHeight(25);
+        SuppliersTable.setSelectionBackground(new java.awt.Color(0, 0, 255));
+        SuppliersTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                SuppliersTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(SuppliersTable);
 
-        jButton1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(51, 51, 255));
-        jButton1.setText("Edit");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        EditBtn.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        EditBtn.setForeground(new java.awt.Color(51, 51, 255));
+        EditBtn.setText("Edit");
+        EditBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                EditBtnActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(51, 51, 255));
-        jButton2.setText("Save");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        SaveBtn.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        SaveBtn.setForeground(new java.awt.Color(51, 51, 255));
+        SaveBtn.setText("Save");
+        SaveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                SaveBtnActionPerformed(evt);
             }
         });
 
-        jButton3.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(51, 51, 255));
-        jButton3.setText("Delete");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        DeleteBtn.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        DeleteBtn.setForeground(new java.awt.Color(51, 51, 255));
+        DeleteBtn.setText("Delete");
+        DeleteBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                DeleteBtnActionPerformed(evt);
             }
         });
+
+        SupRemarkTb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        SupAddressTb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -181,21 +209,21 @@ public class Suppliers extends javax.swing.JFrame {
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(SaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(37, 37, 37)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(EditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel6)
                             .addComponent(jLabel5)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(SupPhoneTb, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(SupNameTb, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(SupRemarkTb, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(SupAddressTb, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(70, 70, 70)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -205,7 +233,7 @@ public class Suppliers extends javax.swing.JFrame {
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(120, 120, 120)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(DeleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -217,19 +245,19 @@ public class Suppliers extends javax.swing.JFrame {
                         .addGap(31, 31, 31)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(SupNameTb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel3)
                         .addGap(24, 24, 24)
-                        .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(SupAddressTb, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(SupPhoneTb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(SupRemarkTb, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -238,11 +266,11 @@ public class Suppliers extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(120, 120, 120)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(EditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(SaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 57, Short.MAX_VALUE))
+                .addComponent(DeleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 55, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -259,17 +287,119 @@ public class Suppliers extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void DeleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+           if (Key == 0)
+           {
+               JOptionPane.showMessageDialog(this, "Select a Supplier"); // If nothing is selected, will throw this error
+           } else{
+               try {
+                   Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
+                   String Query = "Delete from SupplierTb where SupId=?";
+                   PreparedStatement Delete = Con.prepareStatement(Query);
+                   Delete.setInt(1, Key);
+                   Delete.executeUpdate(Query);
+                   JOptionPane.showMessageDialog(this, "Supplier information Deleted"); // Time:1 19 41
+                   ShowSupplier();
+               } catch (Exception e) {
+                   JOptionPane.showMessageDialog(this, e);
+               }
+                
+               
+           }
+    }//GEN-LAST:event_DeleteBtnActionPerformed
+private void ShowSupplier()
+{
+    try {
+            Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
+            St = Con.createStatement();
+            Rs = St.executeQuery("Select * from SupplierTb");
+            SuppliersTable.setModel(DbUtils.resultSetToTableModel(Rs));
+    } catch (Exception e) {
+    }
+}
+    private void SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveBtnActionPerformed
+        // TODO add your handling code here:
+        if(SupNameTb.getText().isEmpty() || SupPhoneTb.getText().isEmpty() || SupAddressTb.getText().isEmpty() || SupRemarkTb.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Missing Information");
+            
+        }   else
+            {
+                try {
+                        Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
+                        PreparedStatement Add = Con.prepareStatement("insert into  SupplierTb values(?,?,?,?,?)");
+                        Add.setInt(1, Key);
+                        Add.setString(2, SupNameTb.getText());
+                        Add.setString(3, SupAddressTb.getText());
+                        Add.setString(4, SupPhoneTb.getText());
+                        Add.setString(5, SupRemarkTb.getText());
+                        int row = Add.executeUpdate();
+                        JOptionPane.showMessageDialog(this, "Supplier information Saved");
+                        ShowSupplier();
+                        Con.close();
+                    } 
+                
+                        catch (Exception e){
+                                JOptionPane.showMessageDialog(this, e);
+                        
+                    }
+            }
+            
+    }//GEN-LAST:event_SaveBtnActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void EditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditBtnActionPerformed
+        
+// Edit Button Coding
+// TODO add your handling code here:
+        if(SupNameTb.getText().isEmpty() || SupPhoneTb.getText().isEmpty() || SupAddressTb.getText().isEmpty() || SupRemarkTb.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Missing Information");
+            
+        }   else
+            {
+                try {
+                        String UpdateQuery = "Update SupplierTb Set SupName=?, SupAddress=?, SupPhone=?, SupRemarks=? where SupId=?";
+                        Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
+                        PreparedStatement Add = Con.prepareStatement(UpdateQuery); // Changed "insert into" to "Update" and added the "Set" to databases "names" - check this
+                        Add.setInt(5, Key);
+                        Add.setString(1, SupNameTb.getText());
+                        Add.setString(2, SupAddressTb.getText());
+                        Add.setString(3, SupPhoneTb.getText());
+                        Add.setString(4, SupRemarkTb.getText());
+                        if(Add.executeUpdate () == 1 )
+                        {
+                            ShowSupplier();
+                                JOptionPane.showMessageDialog(this, "Supplier information Updated");
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Failed to Update");
+                        }
+                        //int row = Add.executeUpdate();
+                        
+                        //ShowSupplier();
+                        Con.close();
+                    } 
+                
+                        catch (Exception e){
+                                JOptionPane.showMessageDialog(this, e);
+                        
+                    }
+            }
+        
+    }//GEN-LAST:event_EditBtnActionPerformed
+// Development of (Select the data to project back into the filling space)
+    int Key = 0;
+    private void SuppliersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SuppliersTableMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+            DefaultTableModel model = (DefaultTableModel)SuppliersTable.getModel();
+            int MyIndex = SuppliersTable.getSelectedRow();
+            Key = Integer.valueOf(model.getValueAt(MyIndex, 0).toString());
+            SupNameTb.setText(model.getValueAt(MyIndex, 1).toString());
+            SupAddressTb.setText(model.getValueAt(MyIndex, 2).toString());
+            SupPhoneTb.setText(model.getValueAt(MyIndex, 3).toString());
+            SupRemarkTb.setText(model.getValueAt(MyIndex, 4).toString());
+            
+    }//GEN-LAST:event_SuppliersTableMouseClicked
 
     /**
      * @param args the command line arguments
@@ -307,9 +437,14 @@ public class Suppliers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton DeleteBtn;
+    private javax.swing.JButton EditBtn;
+    private javax.swing.JButton SaveBtn;
+    private javax.swing.JTextField SupAddressTb;
+    private javax.swing.JTextField SupNameTb;
+    private javax.swing.JTextField SupPhoneTb;
+    private javax.swing.JTextField SupRemarkTb;
+    private javax.swing.JTable SuppliersTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -324,10 +459,5 @@ public class Suppliers extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 }
