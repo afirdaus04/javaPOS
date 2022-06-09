@@ -29,10 +29,10 @@ public class Customers extends javax.swing.JFrame {
     
     Connection Con = null;
     PreparedStatement Pst = null;
-    ResultSet Rs = null;
-    Statement St = null;
+    ResultSet Rs = null, Rs1=null;
+    Statement St = null, St1=null;
 
-    private void ShowCustomers()
+private void ShowCustomers()
 {
     try {
             Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
@@ -330,9 +330,10 @@ public class Customers extends javax.swing.JFrame {
         }   else
             {
                 try {
+                    CountCust();
                         Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
                         PreparedStatement Add = Con.prepareStatement("insert into  CustomerTbl values(?,?,?,?)");
-                        Add.setInt(1, 1);
+                        Add.setInt(1, CId);
                         Add.setString(2, CustNameTb.getText());
                         Add.setString(3, CustAddressTb.getText());
                         Add.setString(4, CustPhoneTb.getText());
@@ -356,7 +357,19 @@ private void Clear()
     CustAddressTb.setText("");
     CustPhoneTb.setText("");    
     Key = 0;
-}    
+}
+
+int CId = 0;
+private void CountCust(){
+
+    try {
+            St1 = Con.createStatement();
+            Rs1 = St1.executeQuery("select Max(CustId) from CustomerTbl");
+            Rs1.next();
+            CId = Rs1.getInt(1)+1;
+    } catch (Exception e) {
+    }
+}
     
     private void DeleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteBtnActionPerformed
         // TODO add your handling code here:

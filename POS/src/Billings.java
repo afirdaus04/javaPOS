@@ -13,7 +13,7 @@ public class Billings extends javax.swing.JFrame {
      * Creates new form Billings
      */
     public Billings() {
-        initComponents();
+        initComponents();//2.25.57
     }
 
     /**

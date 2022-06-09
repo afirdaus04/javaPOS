@@ -25,8 +25,8 @@ public class Suppliers extends javax.swing.JFrame {
     
     Connection Con = null;
     PreparedStatement Pst = null;
-    ResultSet Rs = null;
-    Statement St = null;
+    ResultSet Rs = null , Rs1=null;
+    Statement St = null , St1=null;
     public Suppliers() {
         initComponents();
         ShowSupplier();
@@ -344,9 +344,10 @@ private void ShowSupplier()
         }   else
             {
                 try {
+                    CountSupplier();
                         Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
                         PreparedStatement Add = Con.prepareStatement("insert into  SupplierTb values(?,?,?,?,?)");
-                        Add.setInt(1, 3);
+                        Add.setInt(1, SId);
                         Add.setString(2, SupNameTb.getText());
                         Add.setString(3, SupAddressTb.getText());
                         Add.setString(4, SupPhoneTb.getText());
@@ -366,6 +367,19 @@ private void ShowSupplier()
             
     }//GEN-LAST:event_SaveBtnActionPerformed
 
+    int SId = 0;
+    private void CountSupplier(){
+
+    try {
+            St1 = Con.createStatement();
+            Rs1 = St1.executeQuery("select Max(SupId) from SupplierTb");
+            Rs1.next();
+            SId = Rs1.getInt(1)+1;
+    } catch (Exception e) {
+    }
+}
+    
+    
     private void EditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditBtnActionPerformed
         
 // Edit Button Coding
