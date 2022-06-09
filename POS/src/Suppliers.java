@@ -1,3 +1,7 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -286,21 +290,34 @@ public class Suppliers extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+//clear key
+    
+    private void Clear()
+{
+    SupNameTb.setText("");
+    SupPhoneTb.setText("");
+    SupRemarkTb.setText("");
+    SupAddressTb.setText("");
+    Key = 0;
+}
+        
     private void DeleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteBtnActionPerformed
+        
+        // develop Delete Function
         // TODO add your handling code here:
            if (Key == 0)
            {
-               JOptionPane.showMessageDialog(this, "Select a Supplier"); // If nothing is selected, will throw this error
+               JOptionPane.showMessageDialog(this, "Select a Supplier"); // If nothing is selected, will this error shows up
            } else{
                try {
                    Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
-                   String Query = "Delete from SupplierTb where SupId=?";
-                   PreparedStatement Delete = Con.prepareStatement(Query);
-                   Delete.setInt(1, Key);
+                   String Query = "Delete from SupplierTb where SupId="+Key;
+                   Statement Delete = Con.createStatement();
+                   //   Delete.setInt(1, Key);
                    Delete.executeUpdate(Query);
-                   JOptionPane.showMessageDialog(this, "Supplier information Deleted"); // Time:1 19 41
+                   JOptionPane.showConfirmDialog(this, "Supplier information Deleted"); // Time:1 19 41
                    ShowSupplier();
+                   Clear();
                } catch (Exception e) {
                    JOptionPane.showMessageDialog(this, e);
                }
@@ -329,7 +346,7 @@ private void ShowSupplier()
                 try {
                         Con = DriverManager.getConnection("jdbc:mysql://localhost:3306/POSDb","root","");
                         PreparedStatement Add = Con.prepareStatement("insert into  SupplierTb values(?,?,?,?,?)");
-                        Add.setInt(1, Key);
+                        Add.setInt(1, 3);
                         Add.setString(2, SupNameTb.getText());
                         Add.setString(3, SupAddressTb.getText());
                         Add.setString(4, SupPhoneTb.getText());
@@ -338,6 +355,7 @@ private void ShowSupplier()
                         JOptionPane.showMessageDialog(this, "Supplier information Saved");
                         ShowSupplier();
                         Con.close();
+                        Clear();
                     } 
                 
                         catch (Exception e){
@@ -371,6 +389,7 @@ private void ShowSupplier()
                         {
                             ShowSupplier();
                                 JOptionPane.showMessageDialog(this, "Supplier information Updated");
+                                Clear();
                         } else {
                             JOptionPane.showMessageDialog(this, "Failed to Update");
                         }
